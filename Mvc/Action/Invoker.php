@@ -155,11 +155,47 @@ class Invoker extends Component implements InvokerInterface
     {
         $actions = $this->_getActions($controller);
 
+        $filters = [];
+
+        foreach ($controller->actionFilters() as $item) {
+            if ((isset($item['only']) && !in_array($action, $actions, true))
+                || (isset($item['except']) && in_array($action, $actions, true))) {
+                continue;
+            }
+
+            $className = $item['class'];
+            if (strpos($className, '\\') === false) {
+                $className = 'ManaPHP\Mvc\Action\Filter\\' . $className;
+            }
+
+            unset($item['only'], $item['except'], $item['class']);
+
+            /**
+             * @var \ManaPHP\Mvc\Action\FilterInterface $filter
+             */
+            $filter = $this->_dependencyInjector->get($className, [$item]);
+            $filters[] = $filter;
+
+            if ($filter->beforeAction($action) === false) {
+                return false;
+            }
+        }
+
         if (!in_array($action, $actions, true)) {
             throw new NotFoundException('`:controller:::action` is not found, action is case sensitive.'/**m061a35fc1c0cd0b6f*/,
                 ['action' => $action . 'Action', 'controller' => get_class($controller)]);
         }
 
-        return $this->_invokeAction($controller, $action, $params);
+        if (($r = $this->_invokeAction($controller, $action, $params)) === false) {
+            return false;
+        }
+
+        foreach ($filters as $filter) {
+            if ($filter->afterAction($action) === false) {
+                return false;
+            }
+        }
+
+        return $r;
     }
 }

@@ -9,5 +9,8 @@ namespace ManaPHP\Mvc;
  */
 interface ControllerInterface
 {
-
+    /**
+     * @return array
+     */
+    public function actionFilters();
 }

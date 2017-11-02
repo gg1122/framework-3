@@ -60,5 +60,11 @@ use ManaPHP\Component;
  */
 abstract class Controller extends Component implements ControllerInterface
 {
-
+    /**
+     * @return array
+     */
+    public function actionFilters()
+    {
+        return [];
+    }
 }
