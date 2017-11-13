@@ -4,6 +4,7 @@ namespace ManaPHP\Mvc;
 
 use ManaPHP\Component;
 use ManaPHP\Mvc\Router\NotFoundRouteException;
+use ManaPHP\Utility\Text;
 
 /**
  * Class ManaPHP\Mvc\Handler
@@ -54,14 +55,21 @@ class Handler extends Component implements HandlerInterface
 
         $moduleName = $this->router->getModuleName();
         $controllerName = $this->router->getControllerName();
+        $areaName = Text::camelize($this->router->getAreaName());
         $actionName = $this->router->getActionName();
         $params = $this->router->getParams();
 
         if ($this->_lastModule !== $moduleName) {
             $this->_lastModule = $moduleName;
 
-            $this->alias->set('@module', "@app/$moduleName");
-            $this->alias->set('@ns.module', '@ns.app\\' . $moduleName);
+            if ($areaName === null) {
+                $this->alias->set('@module', "@app/$moduleName");
+                $this->alias->set('@ns.module', '@ns.app\\' . $moduleName);
+            } else {
+                $this->alias->set('@module', "@app/$moduleName/Areas/$areaName");
+                $this->alias->set('@ns.module', "@ns.app\\$moduleName\\Areas\\$areaName");
+            }
+
             $this->alias->set('@views', '@module/Views');
             $this->alias->set('@messages', '@module/Messages');
         }
@@ -96,7 +104,7 @@ class Handler extends Component implements HandlerInterface
                 break;
             }
 
-            $ret = $this->dispatcher->dispatch($moduleName, $controllerName, $actionName, $params);
+            $ret = $this->dispatcher->dispatch($moduleName, $areaName, $controllerName, $actionName, $params);
             if ($ret !== false) {
                 $actionReturnValue = $this->dispatcher->getReturnedValue();
                 if ($actionReturnValue === null) {

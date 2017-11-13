@@ -9,6 +9,11 @@ namespace ManaPHP\Mvc\Router;
 interface GroupInterface
 {
     /**
+     * @return bool
+     */
+    public function useArea();
+
+    /**
      * Adds a route to the router on any HTTP method
      *
      *<code>

@@ -17,6 +17,11 @@ class Group extends Component implements GroupInterface
     protected $_routes = [];
 
     /**
+     * @var bool
+     */
+    protected $_useArea = false;
+
+    /**
      * Group constructor.
      *
      * @param bool $useDefaultRoutes
@@ -28,6 +33,14 @@ class Group extends Component implements GroupInterface
         if ($useDefaultRoutes) {
             $this->add('/(:controller)?(/:action)?(/:params)?');
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function useArea()
+    {
+        return $this->_useArea;
     }
 
     /**

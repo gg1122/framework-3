@@ -70,6 +70,11 @@ interface RouterInterface
     public function getModuleName();
 
     /**
+     * @return string|null
+     */
+    public function getAreaName();
+
+    /**
      * Returns processed controller name
      *
      * @return string

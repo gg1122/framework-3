@@ -35,6 +35,11 @@ class Dispatcher extends Component implements DispatcherInterface
     /**
      * @var string
      */
+    protected $_areaName;
+
+    /**
+     * @var string
+     */
     protected $_controllerName;
 
     /**
@@ -189,9 +194,10 @@ class Dispatcher extends Component implements DispatcherInterface
      * @throws \ManaPHP\Mvc\Dispatcher\NotFoundControllerException
      * @throws \ManaPHP\Mvc\Dispatcher\NotFoundActionException
      */
-    public function dispatch($module, $controller, $action, $params = [])
+    public function dispatch($module, $area, $controller, $action, $params = [])
     {
         $this->_moduleName = strpos($module, '_') === false ? ucfirst($module) : Text::camelize($module);
+        $this->_areaName = strpos($area, '_') === false ? ucfirst($area) : Text::camelize($area);
         $this->_controllerName = strpos($controller, '_') === false ? ucfirst($controller) : Text::camelize($controller);
         $this->_actionName = strpos($action, '_') === false ? $action : lcfirst(Text::camelize($action));
         $this->_params = $params;
@@ -317,6 +323,11 @@ class Dispatcher extends Component implements DispatcherInterface
     public function wasForwarded()
     {
         return $this->_forwarded;
+    }
+
+    public function getAreaName()
+    {
+        return $this->_areaName;
     }
 
     /**

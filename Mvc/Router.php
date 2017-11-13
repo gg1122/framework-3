@@ -22,6 +22,11 @@ class Router extends Component implements RouterInterface
     /**
      * @var string
      */
+    protected $_area;
+
+    /**
+     * @var string
+     */
     protected $_controller;
 
     /**
@@ -106,6 +111,7 @@ class Router extends Component implements RouterInterface
         }
 
         $this->_module = null;
+        $this->_area = null;
         $this->_controller = null;
         $this->_action = null;
         $this->_params = [];
@@ -131,10 +137,26 @@ class Router extends Component implements RouterInterface
              */
             $groupInstance = $this->_dependencyInjector->getShared($this->alias->resolveNS('@ns.app\\' . $module . '\\RouteGroup'));
 
+            $area = null;
+            if ($groupInstance->useArea()) {
+                if ($handledUri === '/') {
+                    $area = 'index';
+                } else {
+                    if (($pos = strpos($handledUri, '/', 1)) !== false) {
+                        $area = substr($handledUri, 1, $pos - 1);
+                        $handledUri = substr($handledUri, $pos);
+                    } else {
+                        $area = $handledUri;
+                        $handledUri = '/';
+                    }
+                }
+            }
+
             $parts = $groupInstance->match($handledUri, $method);
             if ($parts !== false) {
                 $this->_wasMatched = true;
                 $this->_module = $module;
+                $this->_area = $area;
                 $this->_controller = $parts['controller'];
                 $this->_action = $parts['action'];
                 $this->_params = $parts['params'];
@@ -177,6 +199,11 @@ class Router extends Component implements RouterInterface
     public function getModuleName()
     {
         return $this->_module;
+    }
+
+    public function getAreaName()
+    {
+        return $this->_area;
     }
 
     /**

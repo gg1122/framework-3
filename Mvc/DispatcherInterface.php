@@ -17,6 +17,11 @@ interface DispatcherInterface
     public function getModuleName();
 
     /**
+     * @return string
+     */
+    public function getAreaName();
+
+    /**
      * Gets last dispatched action name
      *
      * @return string
@@ -78,13 +83,14 @@ interface DispatcherInterface
      * Dispatches a handle action taking into account the routing parameters
      *
      * @param string $module
+     * @param string $area
      * @param string $controller
      * @param string $action
      * @param array  $params
      *
      * @return false|\ManaPHP\Mvc\ControllerInterface
      */
-    public function dispatch($module, $controller, $action, $params = []);
+    public function dispatch($module, $area, $controller, $action, $params = []);
 
     /**
      * Forwards the execution flow to another controller/action
